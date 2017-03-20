@@ -11,7 +11,7 @@ MailChannel = "abcdefg2"
 JBFchannel = "asfgklhj"
 
 # instantiate Slack client
-token = "xoxb-145531285201-wECPCgXEjzIVTI19mhmQslva"
+token = "xoxb-....-2345"
 slack_client = SlackClient(token)
 
 
