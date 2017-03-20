@@ -6,20 +6,28 @@ import csv
 
 
 Franklin = "ABCDEFG"
-
+MailClark = "abcdefg"
+MailChannel = "abcdefg2"
+JBFchannel = "asfgklhj"
 
 # instantiate Slack client
-token = "xxxx-1234-5678"
+token = "xoxb-145531285201-wECPCgXEjzIVTI19mhmQslva"
 slack_client = SlackClient(token)
+
 
 def filter_func (rtm_output):
 	output = rtm_output
 	if output and len(output) > 0:
 		for i in output:
-			if i and 'text' in i and len(i['text']) >0:
+			if i and 'attachments' in i and MailChannel in i['channel']:
+				return i['attachments'][0]['text'], i['channel'], i['user']
+			elif i and 'text' in i and len(i['text']) >0:
 				return i['text'], i['channel'], i['user']
 	return None, None, None
-				
+
+
+	
+os.chdir('C:\TabCMD\scripts')	
 def reply_func (text, channel):
 	response = "I don't know how to do that yet."
 	if "resend daily" in text or "Resend daily" in text:
@@ -28,7 +36,11 @@ def reply_func (text, channel):
 	elif "resend GTM" in text or "Resend GTM" in text:
 		response = "I'll take care of that right now."
 		os.chdir('C:\TabCMD\scripts')
-		import GTM
+		Popen("Python C:\TabCMD\scripts\GTM.PY")
+	elif "resend outlook" in text or "Resend outlook" in text or "Resend weekly expected" in text or "resend weekly expected" in text:
+		response = "I'll take care of that right now."
+		os.chdir('C:\TabCMD\scripts')
+		Popen("Python C:\TabCMD\scripts\Outlook.PY")
 	elif "resend completed daily" in text or "Resend completed daily" in text:
 		response = "I'll take care of that right now."
 		Popen("C:\TabCMD\scripts\Resend_Scripts\weekly_review_resend.bat")
@@ -78,7 +90,11 @@ if slack_client.rtm_connect():
 	print("Franklin's alive!")
 	while True:
 		text, channel, user  = filter_func(slack_client.rtm_read())
-		if text and channel and str(user) != Franklin:
+		if text and channel and MailChannel in channel and str(user) != Franklin:
+			slack_client.api_call("chat.postMessage", channel=JBFchannel, text=text, as_user=True)
+		if text and channel and EmailChannel not in channel and str(user) != Franklin and str(user) != MailClark:
 			reply_func(text, channel)
 		time.sleep(1)
 		
+		
+#slack_client.api_call("chat.postMessage", channel=channel, text=GO, as_user=True)
